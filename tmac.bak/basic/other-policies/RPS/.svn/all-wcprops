@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/RA-TMAC/tmac/basic/other-policies/RPS
+END
+RPS-patient-role.xml
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/3/trunk/RA-TMAC/tmac/basic/other-policies/RPS/RPS-patient-role.xml
+END
+RPS-doctor-role.xml
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/3/trunk/RA-TMAC/tmac/basic/other-policies/RPS/RPS-doctor-role.xml
+END
+RPS-nurse-role.xml
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/3/trunk/RA-TMAC/tmac/basic/other-policies/RPS/RPS-nurse-role.xml
+END

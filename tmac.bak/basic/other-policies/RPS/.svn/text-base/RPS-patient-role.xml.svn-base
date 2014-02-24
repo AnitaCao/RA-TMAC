@@ -1,0 +1,24 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-­instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="RPS:patient:role"
+	Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-unless-permit">
+	
+	<Description> PolicySet with role-permission assignment for patient role</Description>
+	<Target>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">patient</AttributeValue>
+					<AttributeDesignator
+						MustBePresent="false"
+						Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+						AttributeId ="role"
+						DataType="http://www.w3.org/2001/XMLSchema#string"/>
+				</Match>
+			</AllOf>
+		</AnyOf>
+	</Target>
+	<PolicySetIdReference>PPS:patient:role</PolicySetIdReference>  
+</PolicySet>

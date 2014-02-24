@@ -1,0 +1,248 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="task:assignment:2" Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:permit-overrides">
+
+	<Description> PolicySet with permission for assigment of task n2
+	</Description>
+	<Target>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">2</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Match>
+			</AllOf>
+		</AnyOf>
+
+	</Target>
+
+	<Policy PolicyId="task:assignment:2:policy" Version="1.0"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+		<Description> Policy with permission for assigment of task n2
+		</Description>
+		<Target>
+		</Target>
+
+		<!--VARIABLE THAT CHECK IF TASK IS NOT YET ASSIGNED -->
+		<VariableDefinition VariableId="task-not-allocated">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-equal">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:team_id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Apply>
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
+			</Apply>
+		</VariableDefinition>
+
+
+		<!--VARIABLE THAT CHECK IF TASK IS NOT YET ASSIGNED, AND THE USER IS MEMBER 
+			OF THE TEAM -->
+		<VariableDefinition VariableId="prior-check">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+				<!-- check if user is member of team -->
+				<Apply
+					FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:subject-category:subject" AttributeId="luca:tmac:subject-category:subject:id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:member_id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Apply>
+				<!-- check that task has not been already activated -->
+				<VariableReference VariableId="task-not-allocated" />
+			</Apply>
+
+			<!-- VARIABLE WITH THE NUMBER OF MEMBERS OF THE TEAM -->
+		</VariableDefinition>
+		<VariableDefinition VariableId="member-number">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-to-double">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:member_id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Apply>
+			</Apply>
+		</VariableDefinition>
+
+		<!-- DENY IF TASK ALREADY ASSIGNED -->
+		<Rule RuleId="assigned:task:rule:0" Effect="Deny">
+			<Description>already assigned</Description>
+			<Target>
+			</Target>
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
+					<VariableReference VariableId="task-not-allocated" />
+				</Apply>
+			</Condition>
+			<ObligationExpressions>
+				<ObligationExpression ObligationId="system:show:deny:reason"
+					FulfillOn="Deny">
+					<AttributeAssignmentExpression
+						AttributeId="message">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">Task already assigned
+						</AttributeValue>
+					</AttributeAssignmentExpression>
+				</ObligationExpression>
+			</ObligationExpressions>
+		</Rule>
+
+		<!-- HERE STARTS THE MITIGATION STRATEGY -->
+
+		<!-- FIRST RANGE... RISK < 0.2 -> NO OBLIGATION -->
+		<Rule RuleId="assigned:task:rule:1" Effect="Permit">
+			<Description>lower range--- without obligations</Description>
+			<Target>
+			</Target>
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+					<VariableReference VariableId="prior-check" />
+
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-less-than-or-equal">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:risk-category:risk" AttributeId="luca:tmac:risk-category:risk:risk-value"
+								DataType="http://www.w3.org/2001/XMLSchema#double" />
+						</Apply>
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#double">0.2</AttributeValue>
+					</Apply>
+				</Apply>
+			</Condition>
+		</Rule>
+
+		<!-- SECOND RANGE 0.2 < RISK < 0.4 .... -> SOME OBLIGATIONS -->
+		<Rule RuleId="assigned:task:rule:2" Effect="Permit">
+			<Description>second range--- with obligations</Description>
+			<Target>
+			</Target>
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+
+					<VariableReference VariableId="prior-check" />
+
+					<!-- RISK VALUE CHECK -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-less-than-or-equal">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:risk-category:risk" AttributeId="luca:tmac:risk-category:risk:risk-value"
+								DataType="http://www.w3.org/2001/XMLSchema#double" />
+						</Apply>
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#double">0.4</AttributeValue>
+					</Apply>
+
+					<!-- BUDGET CHECK -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-greater-than-or-equal">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:budget"
+								DataType="http://www.w3.org/2001/XMLSchema#double" />
+						</Apply>
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-multiply">
+							<VariableReference VariableId="member-number"></VariableReference>
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#double">0.1</AttributeValue>
+						</Apply>
+
+					</Apply>
+				</Apply>
+			</Condition>
+			<ObligationExpressions>
+				<ObligationExpression ObligationId="user:justify:obligation"
+					FulfillOn="Permit">
+					<AttributeAssignmentExpression
+						AttributeId="duration">
+						<AttributeValue
+							DataType="http://www.w3.org/TR/2002/WD-xquery-operators-20020816#dayTimeDuration">P1DT15S</AttributeValue>
+					</AttributeAssignmentExpression>
+
+					<AttributeAssignmentExpression
+						AttributeId="team">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</AttributeAssignmentExpression>
+
+					<AttributeAssignmentExpression
+						AttributeId="permission">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:permission-category:permission" AttributeId="luca:tmac:permission-category:permission:id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</AttributeAssignmentExpression>
+
+				</ObligationExpression>
+
+				<ObligationExpression ObligationId="user:example:obligation"
+					FulfillOn="Permit">
+					<AttributeAssignmentExpression
+						AttributeId="duration">
+						<AttributeValue
+							DataType="http://www.w3.org/TR/2002/WD-xquery-operators-20020816#dayTimeDuration">P1DT15S</AttributeValue>
+					</AttributeAssignmentExpression>
+
+					<AttributeAssignmentExpression
+						AttributeId="team">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</AttributeAssignmentExpression>
+
+					<AttributeAssignmentExpression
+						AttributeId="permission">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:permission-category:permission" AttributeId="luca:tmac:permission-category:permission:id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</AttributeAssignmentExpression>
+
+				</ObligationExpression>
+			</ObligationExpressions>
+		</Rule>
+		<Rule RuleId="assigned:task:rule:2" Effect="Deny">
+			<Description>second range--- with obligations</Description>
+			<Target>
+			</Target>
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+
+					<VariableReference VariableId="prior-check" />
+
+					<!-- RISK VALUE CHECK -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-less-than-or-equal">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:risk-category:risk" AttributeId="luca:tmac:risk-category:risk:risk-value"
+								DataType="http://www.w3.org/2001/XMLSchema#double" />
+						</Apply>
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#double">0.4</AttributeValue>
+					</Apply>
+
+					<!-- BUDGET CHECK -->
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-less-than">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:budget"
+								DataType="http://www.w3.org/2001/XMLSchema#double" />
+						</Apply>
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-multiply">
+							<VariableReference VariableId="member-number"></VariableReference>
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#double">0.1</AttributeValue>
+						</Apply>
+
+					</Apply>
+				</Apply>
+			</Condition>
+			<ObligationExpressions>
+				<ObligationExpression ObligationId="system:show:need:budget:message"
+					FulfillOn="Deny">
+				</ObligationExpression>
+			</ObligationExpressions>
+		</Rule>
+	</Policy>
+</PolicySet>

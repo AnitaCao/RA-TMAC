@@ -1,0 +1,53 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://dot.rural.ac.uk/rbac/test/data/data_schema.xsd"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="PPS:doctor:role" Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:permit-overrides">
+
+	<Description> PolicySet with permission for the doctor role
+	</Description>
+	<Target>
+	</Target>
+
+	<Policy PolicyId="Permissions:specifically:for:the:doctor:role"
+		Version="1.0"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides">
+		<Description> Policy with permission for the doctor role</Description>
+		<Target>
+		</Target>
+
+		<!-- Permission to create a purchase order -->
+		<Rule RuleId="Permission:to:visit:an:assigned:patient" Effect="Permit">
+			<Description> Permission to visit an assigned patient</Description>
+			<Target>
+				<AnyOf>
+					<AllOf>
+						<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:permission-category:permission" AttributeId="action"
+								DataType="http://www.w3.org/2001/XMLSchema#string" />
+						</Match>
+						<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">user</AttributeValue>
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:permission-category:permission" AttributeId="resource_type"
+								DataType="http://www.w3.org/2001/XMLSchema#string" />
+						</Match>
+					</AllOf>
+				</AnyOf>
+			</Target>
+			<Condition>
+				<Apply
+					FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+					<AttributeDesignator MustBePresent="false"
+						Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+						AttributeId="assigned_patient" DataType="http://www.w3.org/2001/XMLSchema#string" />
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:permission-category:permission" AttributeId="resource-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Apply>
+			</Condition>
+		</Rule>
+	</Policy>
+</PolicySet>

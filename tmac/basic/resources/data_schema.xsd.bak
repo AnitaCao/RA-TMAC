@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!-- <import id=ID namespace="http://www.w3.org/TR/2002/WD-xquery-operators-20020816" schemaLocation=anyURI any attributes>
+-->
+<xs:schema targetNamespace="tmac:basic:resources"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xf="http://www.w3.org/TR/2002/WD-xquery-operators-20020816"
+	xmlns="tmac:basic:resources">
+
+	<xs:complexType name="taskType">
+		<xs:sequence>
+			<xs:element name="id" type="xs:integer" maxOccurs = "1" minOccurs = "1"></xs:element>
+			<xs:element name="permission_id" type="xs:string"
+				maxOccurs="unbounded" minOccurs="1">
+			</xs:element>
+			<xs:element name="start_time" type="xs:dateTime"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="duration" type="xf:dayTimeDuration" maxOccurs="1"
+				minOccurs="1">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="userType">
+		<xs:sequence>
+			<xs:element name="id" type="xs:integer" maxOccurs = "1" minOccurs = "1"></xs:element>
+			<xs:element name="first_name" type="xs:string" maxOccurs="1"
+				minOccurs="1">
+			</xs:element>
+			<xs:element name="last_name" type="xs:string" maxOccurs="1"
+				minOccurs="1">
+			</xs:element>
+			<xs:element name="DoB" type="xs:date" maxOccurs="1"
+				minOccurs="1">
+			</xs:element>
+			<xs:element name="role" type="xs:string" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="clinical_data" type="xs:string"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="assigned_patient" type="xs:string"
+				maxOccurs="unbounded" minOccurs="0">
+			</xs:element>
+			<xs:element name="trustworthiness" type="xs:double"
+				minOccurs="0" maxOccurs="1">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="teamType">
+		<xs:sequence>
+		<xs:element name="id" type="xs:integer" maxOccurs = "1" minOccurs = "1"></xs:element>
+			<xs:element name="member_id" minOccurs="1" maxOccurs="unbounded"
+				type="xs:string">
+			</xs:element>
+			<xs:element name="task_id" type="xs:string" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="permissionType">
+		<xs:sequence>
+			<xs:element name="permission_id" type="xs:integer" maxOccurs = "1" minOccurs = "1"></xs:element>
+			<xs:element name="action" type="xs:string" maxOccurs="1"
+				minOccurs="1"/>
+			<xs:element name="resource_type" type="xs:string" maxOccurs="1"
+				minOccurs="1"/>
+			<xs:element name="resource_id" type="xs:string" maxOccurs="1"
+				minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="user" type="userType" maxOccurs="unbounded"
+					minOccurs="0"></xs:element>
+				<xs:element name="team" type="teamType" maxOccurs="unbounded"
+					minOccurs="0"></xs:element>
+				<xs:element name="permission" type="permissionType"
+					maxOccurs="unbounded" minOccurs="0"></xs:element>
+				<xs:element name="task" type="taskType" maxOccurs="unbounded"
+					minOccurs="0"></xs:element>
+				<xs:element name="permission" type="permissionType" maxOccurs="unbounded"
+					minOccurs="0"></xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>

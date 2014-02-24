@@ -1,0 +1,44 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-­instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="all:task:assigment:policyset" Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-unless-permit">
+
+	<Description>
+		PolicySet for task-assignment requests
+	</Description>
+	<Target>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">task_assignment</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+						Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+						AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Match>
+			</AllOf>
+		</AnyOf>
+	</Target>
+	
+	<PolicySetIdReference>task:assignment:2</PolicySetIdReference>
+
+	<ObligationExpressions>
+		<ObligationExpression ObligationId="system:assign:task:obligation"
+			FulfillOn="Permit">
+			<AttributeAssignmentExpression
+				AttributeId="associating_task">
+				<AttributeDesignator MustBePresent="false"
+					Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+			</AttributeAssignmentExpression>
+			<AttributeAssignmentExpression
+				AttributeId="associating_team">
+				<AttributeDesignator MustBePresent="false"
+					Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+			</AttributeAssignmentExpression>
+		</ObligationExpression>
+	</ObligationExpressions>
+
+</PolicySet>

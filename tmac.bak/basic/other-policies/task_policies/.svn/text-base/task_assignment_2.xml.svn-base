@@ -1,0 +1,46 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="task:assignment:2" Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:permit-overrides">
+
+	<Description> PolicySet with permission for assigment of task n2
+	</Description>
+	<Target>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">2</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Match>
+			</AllOf>
+		</AnyOf>
+
+	</Target>
+
+	<Policy PolicyId="assigned:task:policy" Version="1.0"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides">
+		<!-- Here we express the Mitigation Strategy -->
+		<Description> Policy with permission for assigment of task n2
+		</Description>
+		<Target>
+		</Target>
+		<Rule RuleId="assigned:task:rule" Effect="Permit">
+			<Description>lower range--- without obligations</Description>
+			<Target>
+			</Target>
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-less-than-or-equal">
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:double-one-and-only">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:risk-category:risk" AttributeId="luca:tmac:risk-category:risk:risk-value"
+							DataType="http://www.w3.org/2001/XMLSchema#double" />
+					</Apply>
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#double">0.2</AttributeValue>
+				</Apply>
+			</Condition>
+		</Rule>
+	</Policy>
+</PolicySet>

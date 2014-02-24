@@ -1,0 +1,109 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="assigned:task" Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:permit-overrides">
+
+	<Description> PolicySet with permission for task already assigned to a team</Description>
+	<Target>
+	</Target>
+
+	<Policy PolicyId="assigned:task:policy" Version="1.0"
+		RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides">
+		<Description> Policy with permission for task already assigned to a
+			team
+		</Description>
+		<Target>
+		</Target>
+
+		<!-- Permission to create a purchase order -->
+		<Rule RuleId="assigned:task:rule" Effect="Permit">
+			<Description> rule that grants access to team that has already assigned a task
+			</Description>
+			<Target>
+			</Target>
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+					<!-- check if user is member of team -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:subject-category:subject" AttributeId="luca:tmac:subject-category:subject:id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:member_id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</Apply>
+
+					<!-- check if team is assigned to task -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:team_id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</Apply>
+
+					<!-- check if task has been activated -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than-or-equal">
+						<Apply
+							FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+								AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-dateTime"
+								DataType="http://www.w3.org/2001/XMLSchema#dateTime" />
+						</Apply>
+						<Apply
+							FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:start_time"
+								DataType="http://www.w3.org/2001/XMLSchema#dateTime" />
+						</Apply>
+					</Apply>
+
+					<!-- and is not expired yet -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than-or-equal">
+						<Apply
+							FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-add-dayTimeDuration">
+							<Apply
+								FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-one-and-only">
+								<AttributeDesignator MustBePresent="false"
+									Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:start_time"
+									DataType="http://www.w3.org/2001/XMLSchema#dateTime" />
+							</Apply>
+							<Apply
+								FunctionId="urn:oasis:names:tc:xacml:1.0:function:dayTimeDuration-one-and-only">
+								<AttributeDesignator MustBePresent="false"
+									Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:duration"
+									DataType="http://www.w3.org/TR/2002/WD-xquery-operators-20020816#dayTimeDuration" />
+							</Apply>
+						</Apply>
+
+						<Apply
+							FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-one-and-only">
+							<AttributeDesignator MustBePresent="false"
+								Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+								DataType="http://www.w3.org/2001/XMLSchema#dateTime"
+								AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-dateTime" />
+						</Apply>
+					</Apply>
+
+					<!-- check if permission is assigned to task -->
+					<Apply
+						FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:permission_id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+						<AttributeDesignator MustBePresent="false"
+							Category="luca:tmac:permission-category:permission" AttributeId="luca:tmac:permission-category:permission:permission_id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</Apply>
+				</Apply>
+			</Condition>
+		</Rule>
+	</Policy>
+</PolicySet>

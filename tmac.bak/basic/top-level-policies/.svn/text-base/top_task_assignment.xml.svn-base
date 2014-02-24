@@ -1,0 +1,75 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-­instance"
+	xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-­17  xacml-­core-­v3-­schema-­wd-­17.xsd"
+	PolicySetId="all:task:assigment:policyset" Version="1.0"
+	PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-unless-permit">
+
+	<Description>
+		PolicySet for task-assignment requests
+	</Description>
+	
+	<Target>
+		<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+			<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+				task_assignment
+			</AttributeValue>
+			<AttributeDesignator MustBePresent="false"
+				Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+				AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+				DataType="http://www.w3.org/2001/XMLSchema#string" />
+		</Match>
+	</Target>
+	
+	<Condition>
+		<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+			<!-- check if user is member of team -->
+			<Apply
+				FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+				<AttributeDesignator MustBePresent="false"
+					Category="luca:tmac:subject-category:subject" AttributeId="luca:tmac:subject-category:subject:id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+				<AttributeDesignator MustBePresent="false"
+					Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:member_id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+			</Apply>
+
+			<!-- check that task has not been already activated -->
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-equal">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-bag-size">
+					<AttributeDesignator MustBePresent="false"
+						Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:start_time"
+						DataType="http://www.w3.org/2001/XMLSchema#dateTime" />
+				</Apply>
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0
+				</AttributeValue>
+			</Apply>
+		</Apply>
+	</Condition>
+	<PolicySetIdReference>task:assignment:2</PolicySetIdReference>
+	
+	<ObligationExpressions>
+		<ObligationExpression ObligationId="assign:task:obligation"
+			FulfillOn="Permit">
+			<AttributeAssignmentExpression
+				AttributeId="associating_task">
+				<AttributeDesignator MustBePresent="false"
+					Category="luca:tmac:task-category:task" AttributeId="luca:tmac:task-category:task:id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+			</AttributeAssignmentExpression>
+			<AttributeAssignmentExpression
+				AttributeId="associating_team">
+				<AttributeDesignator MustBePresent="false"
+					Category="luca:tmac:team-category:team" AttributeId="luca:tmac:team-category:team:id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+			</AttributeAssignmentExpression>
+			<AttributeAssignmenteExpression
+				AttributeId="start_time">
+				<AttributeDesignator MustBePresent="false"
+					Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+					DataType="http://www.w3.org/2001/XMLSchema#dateTime"
+					AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-dateTime" />
+			</AttributeAssignmenteExpression>
+		</ObligationExpression>
+	</ObligationExpressions>
+	
+</PolicySet>
