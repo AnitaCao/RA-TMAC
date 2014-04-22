@@ -8,4 +8,10 @@ public class StandardBudgetCalculator implements NeededBudgetCalculator {
 		// TODO WRITE BUDGET CALCULATOR
 		return 0;
 	}
+	
+	@Override
+	public double calculateBudget() {
+		// TODO WRITE BUDGET CALCULATOR
+		return 0.2;
+	}
 }

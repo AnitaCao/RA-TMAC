@@ -418,7 +418,8 @@ public abstract class FunctionBase implements Function {
 
 				if ((!eval.getType().toString().equals(paramType))
 						|| (eval.returnsBag() != paramIsBag))
-					throw new IllegalArgumentException("illegal parameter  " + eval.returnsBag() + "  should be " + paramIsBag );
+					throw new IllegalArgumentException("illegal parameter  " + eval.returnsBag() + "  should be " + paramIsBag +
+							eval.getType().toString() +"should be "+ paramType);
 			}
 		} else {
 			// first, check the length of the inputs

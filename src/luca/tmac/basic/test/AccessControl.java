@@ -9,9 +9,10 @@ import org.wso2.balana.ctx.AbstractResult;
 import org.wso2.balana.ctx.AttributeAssignment;
 import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.xacml3.Advice;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -22,6 +23,8 @@ import luca.tmac.basic.TmacPDP;
 import luca.tmac.basic.data.uris.ActionAttributeURI;
 import luca.tmac.basic.data.xml.PermissionAttributeXmlName;
 import luca.tmac.basic.obligations.Obligation;
+import luca.tmac.basic.obligations.NonRESTObligation;
+import luca.tmac.basic.obligations.NonRESTObligation;
 import luca.tmac.basic.obligations.UserObligationMonitor;
 
 public class AccessControl {

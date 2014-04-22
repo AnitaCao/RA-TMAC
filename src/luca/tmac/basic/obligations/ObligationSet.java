@@ -22,10 +22,10 @@ public class ObligationSet {
 		this.setId = setId;
 	}
 	
-	public ObligationSet(List<Obligation> oblList,DataHandler dh)
+	public ObligationSet(List<Obligation> obl,DataHandler dh)
 	{
 		
-		this.list = oblList;
+		this.list = obl;
 		this.dh = dh;
 		setId = getLastSetId() + 1;
 

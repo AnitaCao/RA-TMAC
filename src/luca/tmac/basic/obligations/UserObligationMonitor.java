@@ -9,11 +9,6 @@ import java.util.TimerTask;
 
 import luca.data.AttributeQuery;
 import luca.data.DataHandler;
-import luca.data.XmlDataHandler;
-
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.wso2.balana.ParsingException;
 import org.wso2.balana.attr.DateTimeAttribute;
 import org.wso2.balana.attr.StringAttribute;
@@ -37,9 +32,6 @@ public class UserObligationMonitor {
 		obligationList = new ArrayList<Obligation>();
 		oblSetList = new ArrayList<ObligationSet>();
 		dh = handler;
-		for (Obligation obl : oblList) {
-			addObligation(obl);
-		}
 	}
 
 	public UserObligationMonitor(ObligationMonitorable pm, DataHandler handler) {
@@ -59,10 +51,10 @@ public class UserObligationMonitor {
 			timer.schedule(new myTimerTask(obl, this), deadline);
 			monitorableObject.notifyObligationInsert(obl);
 			
-			ObligationSet set = getSet(Integer.parseInt(obl.getAttribute(obl.SET_ID_ATTRIBUTE_NAME)));
-			if(!oblSetList.contains(set))
-				oblSetList.add(set);
-			set.add(obl);
+//			ObligationSet set = getSet(Integer.parseInt(obl.getAttribute(obl.SET_ID_ATTRIBUTE_NAME)));
+//			if(!oblSetList.contains(set))
+//				oblSetList.add(set);
+//			set.add(obl);
 		}
 	}
 
@@ -83,7 +75,7 @@ public class UserObligationMonitor {
 	
 	
 	public void loadListFromDb() {
-		List<Obligation> list = getListFromDb();
+		List<Obligation> list = getListFromDb(); //get obligations from data.xml file. 
 		obligationList.clear();
 		timer.cancel();
 		timer = new Timer();
@@ -127,7 +119,15 @@ public class UserObligationMonitor {
 					newAttList.add(att);
 				}
 			}
-			oblList.add(new Obligation(actionName, startTime, newAttList));
+			
+			// TODO: Chris: here we need to check what kind of obligation this is,
+			// probably by using the XML name, and create the appropriate subclass. The
+			// ArrayList will take anything that is an Obligation, but we need to call
+			// the correct constructor so need the exact type here.
+//			if(actionName.equals(ObligationIds.EMAIL_OBLIGATION_NAME_XML)){
+//				EmailObligation emailOb = new EmailObligation(actionName, startTime, newAttList);
+//			}
+			//oblList.add(new Obligation(actionName, startTime, newAttList));
 		}
 		return oblList;
 	}
@@ -135,17 +135,17 @@ public class UserObligationMonitor {
 	public void writeToDb(Obligation obl) {
 		ArrayList<AttributeQuery> aq = new ArrayList<AttributeQuery>();
 		aq.add(new AttributeQuery(
-				ObligationIds.ACTION_NAME_OBLIGATION_ATTRIBUTE, obl.actionName,
+				ObligationIds.ACTION_NAME_OBLIGATION_ATTRIBUTE, obl.getActionName(),
 				StringAttribute.identifier));
 		aq.add(new AttributeQuery(
 				ObligationIds.START_TIME_OBLIGATION_ATTRIBUTE,
-				new DateTimeAttribute(obl.startDate).encode(),
+				new DateTimeAttribute(obl.getStartDate()).encode(),
 				DateTimeAttribute.identifier));
 
-		for (String parName : obl.attributeMap.keySet()) {
-			aq.add(new AttributeQuery(parName,obl.attributeMap.get(parName),StringAttribute.identifier));
+		for (String parName : obl.getAttributeMap().keySet()) {
+			aq.add(new AttributeQuery(parName,obl.getAttributeMap().get(parName),StringAttribute.identifier));
 		}
-		String id = dh.write("obligation", aq);
+		String id = dh.write("obligation", aq); //write the obligation to database 
 		obl.setAttribute(new AttributeQuery("id", id,
 				StringAttribute.identifier));
 	}
@@ -166,7 +166,7 @@ public class UserObligationMonitor {
 			}
 			
 			monitor.obligationList.remove(obl);
-			obl.setAttribute(new AttributeQuery(Obligation.STATE_ATTRIBUTE_NAME,Obligation.STATE_EXPIRED,StringAttribute.identifier));
+			obl.setAttribute(new AttributeQuery(Obligation.STATE_ATTRIBUTE_NAME,Obligation.STATE_EXPIRED,StringAttribute.identifier)); //put the value : expired , the name: state to a hashmap 
 			dh.remove("obligation", obl.getAttribute("id"));
 			writeToDb(obl);
 			if (monitor.monitorableObject != null && !obl.isFulfilled())

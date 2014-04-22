@@ -2,101 +2,87 @@ package luca.tmac.basic.obligations;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.UUID;
 
-import org.wso2.balana.ParsingException;
-import org.wso2.balana.attr.DayTimeDurationAttribute;
 import luca.data.AttributeQuery;
 
-public class Obligation {
-	
+public interface Obligation {
+
 	public static final String STATE_FULFILLED = "fulfilled";
 	public static final String STATE_ACTIVE = "active";
 	public static final String STATE_EXPIRED = "expired";
 	public static final String STATE_ATTRIBUTE_NAME = "state";
 	public static final String SET_ID_ATTRIBUTE_NAME = "setId";
-	
-	
-	public String actionName;
-	public HashMap<String,String> attributeMap;
-	public Date startDate;
 
-	public Obligation(String pId,Date pStartDate, List<AttributeQuery> pParameters) {
-		actionName = pId;
-		startDate = pStartDate;
-		attributeMap = new HashMap<String,String>();
-		for(AttributeQuery aq : pParameters)
-		{
-			attributeMap.put(aq.name, aq.value);
-		}
-	}
-	
-	public String getAttribute(String name)
-	{
-		if(name.equals(ObligationIds.ACTION_NAME_OBLIGATION_ATTRIBUTE))
-			return actionName;
-		return attributeMap.get(name);
-	}
-	
-	public Date getDeadline()
-	{
-		String xmlDurationString = this
-				.getAttribute(ObligationIds.DURATION_OBLIGATION_ATTRIBUTE);
-		long duration = 0;
-		try {
-			duration = DayTimeDurationAttribute.getInstance(xmlDurationString)
-					.getTotalSeconds();
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (ParsingException e) {
-			e.printStackTrace();
-		}
-		
-		Date deadline = new Date(startDate.getTime() + duration);
-		return deadline;
-	}
-	
-	@Override
-	public String toString() {
-		String out = "Obl[Id = " + actionName;
-		for ( String aName : attributeMap.keySet()) {
-			out += ", " + aName + " = " + attributeMap.get(aName);
-		}
-		out += "]";
-		return out;
-	}
 
-	public boolean isUserObligation()
-	{
-		return actionName.startsWith(ObligationIds.USER_PREFIX);
-	}
-	
-	public boolean isSystemObligation()
-	{
-		return !isUserObligation();
-	}
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#getAttribute(java.lang.String)
+	 */
+	public abstract String getAttribute(String name);
 
-	public void setAttribute(AttributeQuery aq)
-	{
-		attributeMap.put(aq.name, aq.value);
-	}
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#getDeadline()
+	 */
+	public abstract Date getDeadline();
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#toString()
+	 */
+	public abstract String toString();
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#isUserObligation()
+	 */
+	public abstract boolean isUserObligation();
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#isSystemObligation()
+	 */
+	public abstract boolean isSystemObligation();
+
+	public abstract boolean isSatisfied(String userId, String uuid);
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#setAttribute(luca.data.AttributeQuery)
+	 */
+	public abstract void setAttribute(AttributeQuery aq);
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#isFulfilled()
+	 */
+	public abstract boolean isFulfilled();
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#isActive()
+	 */
+	public abstract boolean isActive();
+
+	/* (non-Javadoc)
+	 * @see luca.tmac.basic.obligations.Obligation#isExpired()
+	 */
+	public abstract boolean isExpired();
 	
-	public boolean isFulfilled()
-	{
-		String state =  getAttribute(STATE_ATTRIBUTE_NAME);
-		return state != null && state.equals(STATE_FULFILLED);
-	}
+	public String getActionName();
+
+	public void setActionName(String actionName);
+
+	public HashMap<String, String> getAttributeMap();
+
+	public void setAttributeMap(HashMap<String, String> attributeMap);
+
+	public Date getStartDate();
+
+	public void setStartDate(Date startDate);
 	
-	public boolean isActive()
-	{
-		
-		String state =  getAttribute(STATE_ATTRIBUTE_NAME);
-		return state == null || state.equals(STATE_ACTIVE);
-		
-	}
+	public UUID getObUUID();
 	
-	public boolean isExpired()
-	{
-		String state =  getAttribute(STATE_ATTRIBUTE_NAME);
-		return state != null && state.equals(STATE_EXPIRED);	}
+	public void setObUUID(UUID obUUID);
+
+	public String getUserId();
+
+	public void setUserId(String userId);
+	
+	public String getDecreasedBudget();
+
+	public void setDecreasedBudget(String decreasedBudget);
 }

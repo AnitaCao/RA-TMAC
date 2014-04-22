@@ -8,8 +8,7 @@ import java.util.Set;
 import luca.data.DataHandler;
 import luca.tmac.basic.data.AbstractAttributeFinderModule;
 import luca.tmac.basic.data.impl.PermissionAttributeFinderModule;
-import luca.tmac.basic.data.impl.RiskAttributeFinderModule;
-import luca.tmac.basic.data.impl.SubjectAttributeFinderModule;
+
 import luca.tmac.basic.data.impl.TaskAttributeFinderModule;
 import luca.tmac.basic.data.impl.TeamAttributeFinderModule;
 
@@ -23,9 +22,6 @@ import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.finder.impl.FileBasedPolicyFinderModule;
 import org.wso2.balana.finder.impl.FileBasedPolicyIdFinderModule;
-//import org.openmrs.module.basicmodule.dataFinder.OpenmrsSubjectAttributeFinderModule;
-
-
 
 public class TmacPDP {
 	private Balana balana;
@@ -47,7 +43,9 @@ public class TmacPDP {
 
 		dh = pDh;
 		finderModules = new ArrayList<AttributeFinderModule>();
-		//PDPConfig pdpConfig = balana.getPdpConfig();
+		
+		pdpConfig = balana.getPdpConfig();
+		attributeFinder = pdpConfig.getAttributeFinder();
 
 		Set<PolicyFinderModule> pFinderModules = new HashSet<PolicyFinderModule>();
 
@@ -67,34 +65,26 @@ public class TmacPDP {
 
 		// registering new attribute finder. so default PDPConfig is needed to
 		// change
-		//attributeFinder = pdpConfig.getAttributeFinder();
 		//OpenmrsSubjectAttributeFinderModule is for find the attributes from openmrs not from the xml file
 	
 		finderModules.add(new PermissionAttributeFinderModule(dh));
-		//finderModules.add(m);
-		//finderModules.add(new SubjectAttributeFinderModule(dh));
 		finderModules.add(new TaskAttributeFinderModule(dh));
 		finderModules.add(new TeamAttributeFinderModule(dh));
-		finderModules.add(new RiskAttributeFinderModule(dh,
-				new StandardTrustCalculator(), new StandardRiskCalculator(),new StandardBudgetCalculator()));
+		//finderModules.add(new RiskAttributeFinderModule(dh,
+		//		new StandardTrustCalculator(), new StandardRiskCalculator(),new StandardBudgetCalculator()));
 		finderModules.add(new CurrentEnvModule());
 		
-//		finderModules.addAll(attributeFinder.getModules());
-//
-//		attributeFinder.setModules(finderModules);
-//
-//		mainPDP = new PDP(new PDPConfig(attributeFinder, pFinder, null, true));
 	}
 
-	public void addFinderModule(AbstractAttributeFinderModule m) {
-		pdpConfig = balana.getPdpConfig();
-		attributeFinder = pdpConfig.getAttributeFinder();
-		finderModules.add(m);
+	public void addFinderModule(AbstractAttributeFinderModule s) {
+		finderModules.add(s);
+	}
+
+	public void createPDP(){
 		finderModules.addAll(attributeFinder.getModules());
 		attributeFinder.setModules(finderModules);
 		mainPDP = new PDP(new PDPConfig(attributeFinder,pFinder,null,true));
 	}
-	
 	public String evaluate(String request) {
 		return mainPDP.evaluate(request);
 	}

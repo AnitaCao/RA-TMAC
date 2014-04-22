@@ -11,9 +11,9 @@ import org.w3c.dom.NodeList;
 import luca.data.AttributeQuery;
 import luca.data.DataHandler;
 import luca.data.XmlDataHandler;
+import luca.tmac.basic.obligations.NonRESTObligation;
 import luca.tmac.basic.obligations.Obligation;
 import luca.tmac.basic.obligations.ObligationSet;
-import luca.tmac.basic.obligations.UserObligationMonitor;
 
 public class ResponseParser {
 	
@@ -68,7 +68,7 @@ public class ResponseParser {
 		String xPathSelector = "//Obligations/Obligation";
 		NodeList obligationNodeList = XmlDataHandler
 				.getNodeListFromXpathString(response, xPathSelector);
-		ArrayList<Obligation> sysOblList = new ArrayList<Obligation>();
+		List<Obligation> sysOblList = new ArrayList<Obligation>();
 
 		
 		for (int i = 0; i < obligationNodeList.getLength(); i++) {
@@ -105,7 +105,7 @@ public class ResponseParser {
 						attributeType));
 			}
 		}
-		return new Obligation(obligationId, new Date(), attributes);
+		return new NonRESTObligation(obligationId, null, new Date(), attributes);
 	}
 	
 }
