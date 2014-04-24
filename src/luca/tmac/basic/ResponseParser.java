@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 import luca.data.AttributeQuery;
 import luca.data.DataHandler;
 import luca.data.XmlDataHandler;
-import luca.tmac.basic.obligations.NonRESTObligation;
+import luca.tmac.basic.obligations.ObligationImpl;
 import luca.tmac.basic.obligations.Obligation;
 import luca.tmac.basic.obligations.ObligationSet;
 
@@ -105,7 +105,7 @@ public class ResponseParser {
 						attributeType));
 			}
 		}
-		return new NonRESTObligation(obligationId, null, new Date(), attributes);
+		return new ObligationImpl(obligationId, null, new Date(), attributes);
 	}
 	
 }

@@ -2,7 +2,6 @@ package luca.tmac.basic.obligations;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.UUID;
 
 import luca.data.AttributeQuery;
 
@@ -39,6 +38,8 @@ public interface Obligation {
 	 * @see luca.tmac.basic.obligations.Obligation#isSystemObligation()
 	 */
 	public abstract boolean isSystemObligation();
+	
+
 
 	public abstract boolean isSatisfied(String userId, String uuid);
 
@@ -51,16 +52,22 @@ public interface Obligation {
 	 * @see luca.tmac.basic.obligations.Obligation#isFulfilled()
 	 */
 	public abstract boolean isFulfilled();
+	
+	public abstract void setFulfilled(boolean fulfilled);
 
 	/* (non-Javadoc)
 	 * @see luca.tmac.basic.obligations.Obligation#isActive()
 	 */
 	public abstract boolean isActive();
 
+	public abstract void setActive(boolean active);
+	
 	/* (non-Javadoc)
 	 * @see luca.tmac.basic.obligations.Obligation#isExpired()
 	 */
 	public abstract boolean isExpired();
+	
+	public abstract void setExpired(boolean expired);
 	
 	public String getActionName();
 
@@ -74,9 +81,9 @@ public interface Obligation {
 
 	public void setStartDate(Date startDate);
 	
-	public UUID getObUUID();
+	public String getObUUID();
 	
-	public void setObUUID(UUID obUUID);
+	public void setObUUID(String obUUID);
 
 	public String getUserId();
 

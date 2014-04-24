@@ -10,26 +10,28 @@ import org.wso2.balana.attr.DayTimeDurationAttribute;
 
 import luca.data.AttributeQuery;
 
-public class NonRESTObligation implements Obligation {
+public class ObligationImpl implements Obligation {
 	
 	private String actionName;
 	private HashMap<String,String> attributeMap;
 	private Date startDate;
-	private UUID obUUID;
+	private String obUUID;
 	private String userId;
 	private String decreasedBudget;
 	
-	public NonRESTObligation(){
+	
+	public ObligationImpl(){
 		
 	}
 
-	public NonRESTObligation(String actionName,String userId, Date pStartDate, List<AttributeQuery> pParameters) {
-		this.obUUID = UUID.randomUUID();
+	public ObligationImpl(String actionName,String userId, Date pStartDate, List<AttributeQuery> parameters) {
+		this.obUUID = UUID.randomUUID().toString();
 		this.actionName = actionName;
 		this.startDate = pStartDate;
 		this.userId = userId;
+		
 		this.attributeMap = new HashMap<String,String>();
-		for(AttributeQuery aq : pParameters)
+		for(AttributeQuery aq : parameters)
 		{
 			attributeMap.put(aq.name, aq.value);
 		}
@@ -104,8 +106,7 @@ public class NonRESTObligation implements Obligation {
 	 */
 	@Override
 	public boolean isSatisfied(String userId,String uuid){
-		boolean isSatisfied = false;
-		return isSatisfied;
+		return false;
 	}
 	
 	/* (non-Javadoc)
@@ -172,11 +173,11 @@ public class NonRESTObligation implements Obligation {
 		this.startDate = startDate;
 	}
 	
-	public UUID getObUUID() {
+	public String getObUUID() {
 		return obUUID;
 	}
 
-	public void setObUUID(UUID obUUID) {
+	public void setObUUID(String obUUID) {
 		this.obUUID = obUUID;
 	}
 
